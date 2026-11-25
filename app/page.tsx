@@ -46,18 +46,41 @@ export default function Home() {
 
   return (
     <main style={{ fontFamily: 'Arial, sans-serif', width: '100%', overflowX: 'hidden' }}>
+      <style>{`
+        .nav-links { display: flex; gap: 32px; }
+        .nav-center { position: absolute; left: 50%; transform: translateX(-50%); text-align: center; }
+        .nav-btn { display: inline-block; }
+        .about-inner { display: flex; align-items: center; gap: 56px; }
+        .steps-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+        .footer-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 40px; margin-bottom: 56px; }
+        .footer-bottom { display: flex; justify-content: space-between; font-size: 11px; color: #555; }
+        .desc-buttons { display: inline-grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        @media (max-width: 768px) {
+          .nav-links { display: none; }
+          .nav-btn { display: none; }
+          .nav-center { position: static; transform: none; text-align: center; width: 100%; }
+          .about-inner { flex-direction: column; gap: 32px; padding: 0 20px 48px !important; }
+          .about-inner > div:first-child { width: 100% !important; height: 280px !important; }
+          .steps-grid { grid-template-columns: 1fr; }
+          .footer-grid { grid-template-columns: 1fr; }
+          .footer-bottom { flex-direction: column; gap: 12px; align-items: center; text-align: center; }
+          .desc-buttons { grid-template-columns: 1fr; width: 100%; }
+          .footer-email { font-size: 18px !important; }
+          .footer-right { text-align: left !important; }
+        }
+      `}</style>
 
       {/* NAV */}
       <nav style={S.nav}>
-        <div style={{ display: 'flex', gap: 32 }}>
+        <div className="nav-links">
           <a href="/about" style={S.navLink}>About Me</a>
           <a href="/my-work" style={S.navLink}>My Work</a>
         </div>
-        <div style={S.navCenter}>
+        <div className="nav-center">
           <div style={S.navTitle}>Theogene Sibomana</div>
           <div style={S.navSub}>Ideas. Leadership. Impact.</div>
         </div>
-        <a href="/contact" style={S.navBtn}>Let&apos;s Connect &rarr;</a>
+        <a href="/contact" className="nav-btn" style={S.navBtn}>Let&apos;s Connect &rarr;</a>
       </nav>
 
       {/* HERO */}
@@ -85,7 +108,7 @@ export default function Home() {
           <em style={{ fontFamily: 'Georgia,serif', fontWeight: 400, fontStyle: 'italic' }}>ideas</em>{' '}
           shaping a prosperous Africa.
         </h2>
-        <div style={{ display: 'inline-grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        <div className="desc-buttons">
           {[
             { label: 'My Books', Icon: Books, bg: '#1a1a1a', color: 'white', href: '/books' },
             { label: 'Igeno Gate Rwanda', Icon: House, bg: '#1a1a1a', color: 'white', href: '/my-work' },
@@ -101,7 +124,7 @@ export default function Home() {
 
       {/* ABOUT SECTION */}
       <section style={{ background: '#d4e600', padding: '72px 0 0', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ maxWidth: 920, margin: '0 auto', padding: '0 40px 72px', display: 'flex', alignItems: 'center', gap: 56 }}>
+        <div className="about-inner" style={{ maxWidth: 920, margin: '0 auto', padding: '0 40px 72px' }}>
           <div style={{ flexShrink: 0, position: 'relative', width: 280, height: 360 }}>
             <div style={{ position: 'absolute', left: 8, top: 30, width: 44, height: 290, background: '#2b8fc9', borderRadius: 22, opacity: 0.85, transform: 'rotate(-6deg)' }} />
             <div style={{ position: 'absolute', left: 38, top: 10, width: 24, height: 170, background: '#2b8fc9', borderRadius: 12, opacity: 0.6, transform: 'rotate(-3deg)' }} />
@@ -194,7 +217,7 @@ export default function Home() {
             3 WAYS TO ENGAGE WITH <em style={{ fontFamily: 'Georgia,serif', fontWeight: 400, fontStyle: 'italic' }}>Theogene</em>
           </h2>
           <h2 style={{ fontSize: 26, fontWeight: 900, textTransform: 'uppercase', marginBottom: 52 }}>SIBOMANA&apos;S WORK</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 24 }}>
+          <div className="steps-grid">
             {[
               { Icon: BookOpen, label: 'Read his books', yellow: false },
               { Icon: GlobeIcon, label: 'Join Wealth School Africa', yellow: true },
@@ -270,7 +293,7 @@ export default function Home() {
       <footer style={{ background: '#111', color: '#888', padding: '64px 40px 48px' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
           <div style={{ borderTop: '1px solid #333', marginBottom: 48 }} />
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 40, marginBottom: 56 }}>
+          <div className="footer-grid">
             <div>
               <p style={{ color: '#aaa', fontSize: 13, lineHeight: 1.7, marginBottom: 16 }}>Ready to build ideas that<br />create lasting impact?</p>
               <p style={{ color: 'white', fontSize: 15, fontWeight: 700, lineHeight: 1.6 }}>Let&apos;s make it happen.<br />Connect with me today!</p>
@@ -278,11 +301,11 @@ export default function Home() {
             <div>
               <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.2em', color: '#888', textTransform: 'uppercase', marginBottom: 16 }}>Let&apos;s Talk</p>
               <p style={{ color: '#aaa', fontSize: 13, marginBottom: 8 }}>theosibomana.com</p>
-              <p style={{ color: 'white', fontSize: 28, fontWeight: 300, letterSpacing: '-0.01em', marginBottom: 16, borderBottom: '1px solid #333', paddingBottom: 16 }}>hello@theosibomana.com</p>
+              <p className="footer-email" style={{ color: 'white', fontSize: 28, fontWeight: 300, letterSpacing: '-0.01em', marginBottom: 16, borderBottom: '1px solid #333', paddingBottom: 16 }}>hello@theosibomana.com</p>
               <p style={{ color: '#888', fontSize: 12 }}>Entrepreneur. Author. Educator.</p>
               <p style={{ color: '#666', fontSize: 12 }}>(Based in Rwanda)</p>
             </div>
-            <div style={{ textAlign: 'right' }}>
+            <div className="footer-right" style={{ textAlign: 'right' }}>
               {[{l:'Home',h:'/'},{l:'About Me',h:'/about'},{l:'My Work',h:'/my-work'},{l:'Books & Publications',h:'/books'},{l:'Ideas & Insights',h:'/ideas'},{l:'Contact',h:'/contact'}].map(({l,h}) => (
                 <p key={l} style={{ marginBottom: 12 }}>
                   <a href={h} style={{ color: 'white', textDecoration: 'none', fontSize: 15, fontWeight: 500 }}>{l}</a>
@@ -291,7 +314,7 @@ export default function Home() {
 
             </div>
           </div>
-          <div style={{ borderTop: '1px solid #222', paddingTop: 24, display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#555' }}>
+          <div className="footer-bottom" style={{ borderTop: '1px solid #222', paddingTop: 24 }}>
             <span>&copy; 2026 Theogene Sibomana. All rights reserved. | theosibomana.com</span>
             <div style={{ display: 'flex', gap: 20 }}>
               <a href="#" style={{ color: '#555', textDecoration: 'none' }}>Privacy</a>
