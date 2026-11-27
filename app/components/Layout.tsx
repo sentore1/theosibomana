@@ -1,19 +1,26 @@
 'use client'
+import { useState } from 'react'
 import { LinkedinLogo, FacebookLogo, InstagramLogo, XLogo, YoutubeLogo } from '@phosphor-icons/react'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+  const [menuOpen, setMenuOpen] = useState(false)
+
   return (
     <>
       <style>{`
         .nav-links { display: flex; gap: 32px; }
         .nav-center { position: absolute; left: 50%; transform: translateX(-50%); text-align: center; }
         .nav-btn { display: inline-block; }
+        .nav-hamburger { display: none; }
+        .mobile-menu { display: none; }
         .footer-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 40px; margin-bottom: 56px; }
         .footer-bottom { display: flex; justify-content: space-between; font-size: 11px; color: #555; }
         @media (max-width: 768px) {
           .nav-links { display: none; }
           .nav-btn { display: none; }
-          .nav-center { position: static; transform: none; text-align: center; width: 100%; }
+          .nav-center { position: static; transform: none; text-align: left; flex: 1; }
+          .nav-hamburger { display: flex; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; background: none; border: none; }
+          .mobile-menu { display: flex; flex-direction: column; gap: 0; background: white; border-bottom: 1px solid #eee; padding: 8px 24px 16px; }
           .footer-grid { grid-template-columns: 1fr; }
           .footer-bottom { flex-direction: column; gap: 12px; align-items: center; text-align: center; }
           .footer-email { font-size: 18px !important; }
@@ -22,19 +29,34 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       `}</style>
 
       {/* NAV */}
-      <nav style={{ position: 'sticky', top: 0, zIndex: 50, background: 'white', borderBottom: '1px solid #eee', display: 'flex', alignItems: 'center', gap: 32, padding: '12px 40px' }}>
-        <div className="nav-center">
-          <div style={{ fontSize: 28, fontWeight: 400, letterSpacing: '0.15em', textTransform: 'uppercase' as const, lineHeight: '1' }}>Theogene Sibomana</div>
-          <div style={{ fontSize: 11, letterSpacing: '0.12em', color: '#aaa', textTransform: 'uppercase' as const, marginTop: 2 }}>Ideas. Leadership. Impact.</div>
+      <nav style={{ position: 'sticky', top: 0, zIndex: 50, background: 'white', borderBottom: '1px solid #eee' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 32, padding: '12px 40px', position: 'relative' }}>
+          <div className="nav-center">
+            <div style={{ fontSize: 28, fontWeight: 400, letterSpacing: '0.15em', textTransform: 'uppercase' as const, lineHeight: '1' }}>Theogene Sibomana</div>
+            <div style={{ fontSize: 11, letterSpacing: '0.12em', color: '#aaa', textTransform: 'uppercase' as const, marginTop: 2 }}>Ideas. Leadership. Impact.</div>
+          </div>
+          <div className="nav-links" style={{ flex: 1 }}>
+            <a href="/" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.15em', color: '#888', textDecoration: 'none', textTransform: 'uppercase' as const }}>Home</a>
+            <a href="/about" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.15em', color: '#888', textDecoration: 'none', textTransform: 'uppercase' as const }}>About Me</a>
+            <a href="/my-work" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.15em', color: '#888', textDecoration: 'none', textTransform: 'uppercase' as const }}>My Work</a>
+            <a href="/books" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.15em', color: '#888', textDecoration: 'none', textTransform: 'uppercase' as const }}>Books</a>
+            <a href="/ideas" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.15em', color: '#888', textDecoration: 'none', textTransform: 'uppercase' as const }}>Ideas</a>
+          </div>
+          <a href="/contact" className="nav-btn" style={{ fontSize: 13, fontWeight: 900, padding: '16px 28px', borderRadius: 999, textTransform: 'uppercase' as const, letterSpacing: '0.12em', background: '#4b5320', color: '#fff', textDecoration: 'none', border: '2px solid #3a4119' }}>Let&apos;s Connect &rarr;</a>
+          <button className="nav-hamburger" onClick={() => setMenuOpen(o => !o)} aria-label="Toggle menu">
+            <span style={{ width: 24, height: 2, background: '#333', display: 'block', transition: 'transform 0.2s', transform: menuOpen ? 'rotate(45deg) translate(5px, 5px)' : 'none' }} />
+            <span style={{ width: 24, height: 2, background: '#333', display: 'block', opacity: menuOpen ? 0 : 1, transition: 'opacity 0.2s' }} />
+            <span style={{ width: 24, height: 2, background: '#333', display: 'block', transition: 'transform 0.2s', transform: menuOpen ? 'rotate(-45deg) translate(5px, -5px)' : 'none' }} />
+          </button>
         </div>
-        <div className="nav-links" style={{ flex: 1 }}>
-          <a href="/" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.15em', color: '#888', textDecoration: 'none', textTransform: 'uppercase' as const }}>Home</a>
-          <a href="/about" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.15em', color: '#888', textDecoration: 'none', textTransform: 'uppercase' as const }}>About Me</a>
-          <a href="/my-work" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.15em', color: '#888', textDecoration: 'none', textTransform: 'uppercase' as const }}>My Work</a>
-          <a href="/books" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.15em', color: '#888', textDecoration: 'none', textTransform: 'uppercase' as const }}>Books</a>
-          <a href="/ideas" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.15em', color: '#888', textDecoration: 'none', textTransform: 'uppercase' as const }}>Ideas</a>
-        </div>
-        <a href="/contact" className="nav-btn" style={{ fontSize: 13, fontWeight: 900, padding: '16px 28px', borderRadius: 999, textTransform: 'uppercase' as const, letterSpacing: '0.12em', background: '#4b5320', color: '#fff', textDecoration: 'none', border: '2px solid #3a4119' }}>Let&apos;s Connect &rarr;</a>
+        {menuOpen && (
+          <div className="mobile-menu">
+            {[{l:'Home',h:'/'},{l:'About Me',h:'/about'},{l:'My Work',h:'/my-work'},{l:'Books',h:'/books'},{l:'Ideas',h:'/ideas'}].map(({l,h}) => (
+              <a key={l} href={h} onClick={() => setMenuOpen(false)} style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.15em', color: '#888', textDecoration: 'none', textTransform: 'uppercase' as const, padding: '12px 0', borderBottom: '1px solid #f5f5f5' }}>{l}</a>
+            ))}
+            <a href="/contact" onClick={() => setMenuOpen(false)} style={{ marginTop: 12, display: 'inline-block', fontSize: 12, fontWeight: 900, padding: '14px 24px', borderRadius: 999, textTransform: 'uppercase' as const, letterSpacing: '0.12em', background: '#4b5320', color: '#fff', textDecoration: 'none', border: '2px solid #3a4119', alignSelf: 'flex-start' }}>Let&apos;s Connect &rarr;</a>
+          </div>
+        )}
       </nav>
 
       {children}

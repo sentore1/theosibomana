@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { supabase } from '@/lib/supabase'
 import { Books, House, Globe, Lightbulb, BookOpen, Globe as GlobeIcon, Handshake, LinkedinLogo, FacebookLogo, InstagramLogo, XLogo, YoutubeLogo } from '@phosphor-icons/react'
 
+
 const faqs = [
   { q: 'WHAT IS WEALTH SCHOOL AFRICA?', a: null },
   { q: "WHAT ARE THE KEY THEMES IN THEOGENE'S BOOKS?", a: "Theogene Sibomana's books cover practical wealth creation, personal financial success, and leadership for impact.\n\n1. Building a wealth mindset from the ground up\n2. Practical saving, investing and financial planning tools\n3. Leadership principles for sustainable impact\n4. Empowering communities through knowledge\n5. Creating freedom through financial education" },
@@ -13,15 +14,12 @@ const faqs = [
 ]
 
 const S: Record<string, React.CSSProperties> = {
-  nav: { position: 'sticky', top: 0, zIndex: 50, background: 'white', borderBottom: '1px solid #eee', display: 'flex', alignItems: 'center', gap: 32, padding: '12px 40px' },
   navLink: { fontSize: 11, fontWeight: 700, letterSpacing: '0.15em', color: '#888', textDecoration: 'none', textTransform: 'uppercase' as const },
-  navCenter: { textAlign: 'left' as const },
-  navTitle: { fontSize: 28, fontWeight: 400, letterSpacing: '0.15em', textTransform: 'uppercase' as const, lineHeight: '1' },
-  navSub: { fontSize: 11, letterSpacing: '0.12em', color: '#aaa', textTransform: 'uppercase' as const, marginTop: 2 },
   navBtn: { fontSize: 13, fontWeight: 900, padding: '16px 28px', borderRadius: 999, textTransform: 'uppercase' as const, letterSpacing: '0.12em', background: '#4b5320', color: '#fff', textDecoration: 'none', border: '2px solid #3a4119' },
 }
 
 export default function Home() {
+  const [menuOpen, setMenuOpen] = useState(false)
   const [openFaq, setOpenFaq] = useState<number | null>(1)
   const [tourName, setTourName] = useState('')
   const [tourEmail, setTourEmail] = useState('')
@@ -50,6 +48,8 @@ export default function Home() {
         .nav-links { display: flex; gap: 32px; }
         .nav-center { position: absolute; left: 50%; transform: translateX(-50%); text-align: center; }
         .nav-btn { display: inline-block; }
+        .nav-hamburger { display: none; }
+        .mobile-menu { display: none; }
         .about-inner { display: flex; align-items: center; gap: 56px; }
         .steps-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
         .footer-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 40px; margin-bottom: 56px; }
@@ -60,34 +60,54 @@ export default function Home() {
         @media (max-width: 768px) {
           .nav-links { display: none; }
           .nav-btn { display: none; }
-          .nav-center { position: static; transform: none; text-align: center; width: 100%; }
-          .about-inner { flex-direction: column; gap: 32px; padding: 0 20px 48px !important; }
-          .about-inner > div:first-child { width: 100% !important; height: 280px !important; }
+          .nav-center { position: static; transform: none; text-align: left; flex: 1; }
+          .nav-hamburger { display: flex; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; background: none; border: none; }
+          .mobile-menu { display: flex; flex-direction: column; gap: 0; background: white; border-bottom: 1px solid #eee; padding: 8px 24px 16px; }
+          .about-inner { flex-direction: column; gap: 32px; padding: 0 20px 48px !important; align-items: center !important; }
+          .about-inner > div:first-child { width: 220px !important; height: 300px !important; flex-shrink: 0 !important; }
           .steps-grid { grid-template-columns: 1fr; }
           .footer-grid { grid-template-columns: 1fr; }
           .footer-bottom { flex-direction: column; gap: 12px; align-items: center; text-align: center; }
           .desc-buttons { grid-template-columns: 1fr; width: 100%; }
           .footer-email { font-size: 18px !important; }
           .footer-right { text-align: left !important; }
-          .hero-inner { flex-direction: column; align-items: flex-start; padding: 32px 24px 0 !important; min-height: 520px !important; }
-          .hero-photo { width: 100% !important; height: 280px !important; align-self: center; margin-top: 24px; }
+          .hero-inner { flex-direction: column; align-items: center; padding: 32px 24px 0 !important; min-height: auto !important; }
+          .hero-photo { width: 80% !important; max-width: 320px !important; height: 420px !important; align-self: center !important; margin: 24px auto 0 !important; display: block !important; }
+          .hero-title { font-size: 32px !important; white-space: normal !important; }
+          .hero-sub { font-size: 16px !important; white-space: normal !important; }
+          .hero-desc { white-space: normal !important; }
         }
       `}</style>
 
       {/* NAV */}
-      <nav style={S.nav}>
-        <div className="nav-center">
-          <div style={S.navTitle}>Theogene Sibomana</div>
-          <div style={S.navSub}>Ideas. Leadership. Impact.</div>
+      <nav style={{ position: 'sticky', top: 0, zIndex: 50, background: 'white', borderBottom: '1px solid #eee' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 32, padding: '12px 40px', position: 'relative' }}>
+          <div className="nav-center">
+            <div style={{ fontSize: 28, fontWeight: 400, letterSpacing: '0.15em', textTransform: 'uppercase' as const, lineHeight: '1' }}>Theogene Sibomana</div>
+            <div style={{ fontSize: 11, letterSpacing: '0.12em', color: '#aaa', textTransform: 'uppercase' as const, marginTop: 2 }}>Ideas. Leadership. Impact.</div>
+          </div>
+          <div className="nav-links" style={{ flex: 1 }}>
+            <a href="/" style={S.navLink}>Home</a>
+            <a href="/about" style={S.navLink}>About Me</a>
+            <a href="/my-work" style={S.navLink}>My Work</a>
+            <a href="/books" style={S.navLink}>Books</a>
+            <a href="/ideas" style={S.navLink}>Ideas</a>
+          </div>
+          <a href="/contact" className="nav-btn" style={S.navBtn}>Let&apos;s Connect &rarr;</a>
+          <button className="nav-hamburger" onClick={() => setMenuOpen(o => !o)} aria-label="Toggle menu">
+            <span style={{ width: 24, height: 2, background: '#333', display: 'block', transition: 'transform 0.2s', transform: menuOpen ? 'rotate(45deg) translate(5px, 5px)' : 'none' }} />
+            <span style={{ width: 24, height: 2, background: '#333', display: 'block', opacity: menuOpen ? 0 : 1, transition: 'opacity 0.2s' }} />
+            <span style={{ width: 24, height: 2, background: '#333', display: 'block', transition: 'transform 0.2s', transform: menuOpen ? 'rotate(-45deg) translate(5px, -5px)' : 'none' }} />
+          </button>
         </div>
-        <div className="nav-links" style={{ flex: 1 }}>
-          <a href="/" style={S.navLink}>Home</a>
-          <a href="/about" style={S.navLink}>About Me</a>
-          <a href="/my-work" style={S.navLink}>My Work</a>
-          <a href="/books" style={S.navLink}>Books</a>
-          <a href="/ideas" style={S.navLink}>Ideas</a>
-        </div>
-        <a href="/contact" className="nav-btn" style={S.navBtn}>Let&apos;s Connect &rarr;</a>
+        {menuOpen && (
+          <div className="mobile-menu">
+            {[{l:'Home',h:'/'},{l:'About Me',h:'/about'},{l:'My Work',h:'/my-work'},{l:'Books',h:'/books'},{l:'Ideas',h:'/ideas'}].map(({l,h}) => (
+              <a key={l} href={h} onClick={() => setMenuOpen(false)} style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.15em', color: '#888', textDecoration: 'none', textTransform: 'uppercase' as const, padding: '12px 0', borderBottom: '1px solid #f5f5f5' }}>{l}</a>
+            ))}
+            <a href="/contact" onClick={() => setMenuOpen(false)} style={{ marginTop: 12, display: 'inline-block', fontSize: 12, fontWeight: 900, padding: '14px 24px', borderRadius: 999, textTransform: 'uppercase' as const, letterSpacing: '0.12em', background: '#4b5320', color: '#fff', textDecoration: 'none', border: '2px solid #3a4119', alignSelf: 'flex-start' }}>Let&apos;s Connect &rarr;</a>
+          </div>
+        )}
       </nav>
 
       {/* HERO */}
@@ -107,14 +127,14 @@ export default function Home() {
         <div className="hero-inner" style={{ position: 'relative', zIndex: 2, maxWidth: 980, margin: '0 auto', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', padding: '48px 40px 0', minHeight: 420 }}>
 
           {/* Left — text */}
-          <div style={{ flex: 1, paddingBottom: 56, maxWidth: 600 }}>
-            <h1 style={{ fontSize: 48, fontWeight: 900, lineHeight: 1.1, color: 'white', margin: '0 0 8px', fontFamily: 'Georgia, serif', whiteSpace: 'nowrap' }}>
+          <div style={{ flex: 1, paddingBottom: 56, maxWidth: 600, width: '100%' }}>
+            <h1 className="hero-title" style={{ fontSize: 48, fontWeight: 900, lineHeight: 1.1, color: 'white', margin: '0 0 8px', fontFamily: 'Georgia, serif' }}>
               Theogene Sibomana
             </h1>
-            <p style={{ fontSize: 22, fontStyle: 'italic', fontWeight: 400, color: 'white', margin: '0 0 24px', fontFamily: 'Georgia, serif', whiteSpace: 'nowrap' }}>
+            <p className="hero-sub" style={{ fontSize: 22, fontStyle: 'italic', fontWeight: 400, color: 'white', margin: '0 0 24px', fontFamily: 'Georgia, serif' }}>
               Ideas. Leadership. Impact.
             </p>
-            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', lineHeight: 1.75, margin: '0 0 32px', whiteSpace: 'nowrap' }}>
+            <p className="hero-desc" style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', lineHeight: 1.75, margin: '0 0 32px' }}>
               Building ideas, developing people,<br />
               and creating practical solutions for sustainable growth.
             </p>
@@ -134,13 +154,13 @@ export default function Home() {
           </div>
 
           {/* Right — profile photo */}
-          <div className="hero-photo" style={{ flexShrink: 0, alignSelf: 'flex-end', position: 'relative', width: 460, height: 560, filter: 'drop-shadow(0 0 18px rgba(255,255,255,0.85)) drop-shadow(0 0 6px rgba(255,255,255,1))' }}>
+          <div className="hero-photo" style={{ flexShrink: 0, alignSelf: 'flex-end', position: 'relative', width: 460, height: 560 }}>
             <Image
               src="/Theo profile image.png"
               alt="Theogene Sibomana"
               width={460}
               height={560}
-              style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top', display: 'block' }}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }}
               priority
             />
           </div>
@@ -174,7 +194,7 @@ export default function Home() {
       {/* ABOUT SECTION */}
       <section style={{ background: '#4b5320', padding: '72px 0 0', position: 'relative', overflow: 'hidden' }}>
         <div className="about-inner" style={{ maxWidth: 920, margin: '0 auto', padding: '0 40px 72px' }}>
-          <div style={{ flexShrink: 0, position: 'relative', width: 280, height: 360 }}>
+          <div style={{ flexShrink: 0, position: 'relative', width: 280, height: 360, minHeight: 360 }}>
             <div style={{ position: 'absolute', left: 8, top: 30, width: 44, height: 290, background: '#2b8fc9', borderRadius: 22, opacity: 0.85, transform: 'rotate(-6deg)' }} />
             <div style={{ position: 'absolute', left: 38, top: 10, width: 24, height: 170, background: '#2b8fc9', borderRadius: 12, opacity: 0.6, transform: 'rotate(-3deg)' }} />
             <div style={{ position: 'absolute', left: 60, top: 0, width: 210, height: 340, overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,0,0,0.3)' }}>
