@@ -27,10 +27,15 @@ export default function AdminPage() {
   const [editId, setEditId] = useState<number | null>(null)
   const [msg, setMsg] = useState('')
   const [loading, setLoading] = useState(false)
-  const [tab, setTab] = useState<'books' | 'subscribers'>('books')
+  const [tab, setTab] = useState<'books' | 'subscribers' | 'articles'>('books')
   const [subscribers, setSubscribers] = useState<{ id: number; name: string; email: string; type: string; created_at: string }[]>([])
+  const [articles, setArticles] = useState<{ id: number; tag: string; title: string; excerpt: string; content: string; published: boolean; created_at: string }[]>([])
+  const [articleForm, setArticleForm] = useState({ tag: '', title: '', excerpt: '', content: '', published: true })
+  const [articleEditId, setArticleEditId] = useState<number | null>(null)
+  const [articleMsg, setArticleMsg] = useState('')
+  const [articleLoading, setArticleLoading] = useState(false)
 
-  useEffect(() => { if (authed) { fetchBooks(); fetchSubscribers() } }, [authed])
+  useEffect(() => { if (authed) { fetchBooks(); fetchSubscribers(); fetchArticles() } }, [authed])
 
   async function fetchBooks() {
     const { data } = await supabase.from('books').select('*').order('created_at', { ascending: false })
@@ -40,6 +45,41 @@ export default function AdminPage() {
   async function fetchSubscribers() {
     const { data } = await supabase.from('subscribers').select('*').order('created_at', { ascending: false })
     if (data) setSubscribers(data)
+  }
+
+  async function fetchArticles() {
+    const { data } = await supabase.from('articles').select('*').order('created_at', { ascending: false })
+    if (data) setArticles(data)
+  }
+
+  async function handleArticleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setArticleLoading(true)
+    const payload = { tag: articleForm.tag, title: articleForm.title, excerpt: articleForm.excerpt, content: articleForm.content, published: articleForm.published }
+    if (articleEditId) {
+      const { error } = await supabase.from('articles').update(payload).eq('id', articleEditId)
+      setArticleMsg(error ? 'Error updating.' : 'Article updated!')
+    } else {
+      const { error } = await supabase.from('articles').insert(payload)
+      setArticleMsg(error ? 'Error adding.' : 'Article published!')
+    }
+    setArticleForm({ tag: '', title: '', excerpt: '', content: '', published: true })
+    setArticleEditId(null)
+    setArticleLoading(false)
+    fetchArticles()
+  }
+
+  async function deleteArticle(id: number) {
+    if (!confirm('Delete this article?')) return
+    await supabase.from('articles').delete().eq('id', id)
+    fetchArticles()
+  }
+
+  function startEditArticle(a: typeof articles[0]) {
+    setArticleEditId(a.id)
+    setArticleForm({ tag: a.tag, title: a.title, excerpt: a.excerpt, content: a.content, published: a.published })
+    setArticleMsg('')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -91,7 +131,7 @@ export default function AdminPage() {
               style={{ width: '100%', padding: '12px 16px', borderRadius: 8, border: '1px solid #ddd', fontSize: 14, outline: 'none', marginBottom: 12, boxSizing: 'border-box' }}
             />
             {pwErr && <p style={{ color: 'red', fontSize: 13, marginBottom: 10 }}>{pwErr}</p>}
-            <button type="submit" style={{ width: '100%', background: '#d4e600', color: '#111', fontWeight: 900, padding: '12px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 14, letterSpacing: '0.08em' }}>
+            <button type="submit" style={{ width: '100%', background: '#4b5320', color: '#fff', fontWeight: 900, padding: '12px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 14, letterSpacing: '0.08em' }}>
               LOGIN →
             </button>
           </form>
@@ -111,6 +151,7 @@ export default function AdminPage() {
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <button onClick={() => setTab('books')} style={{ padding: '7px 18px', borderRadius: 6, fontSize: 13, fontWeight: 700, border: 'none', cursor: 'pointer', background: tab === 'books' ? '#34d399' : '#374151', color: tab === 'books' ? '#000' : '#fff' }}>Books</button>
+          <button onClick={() => setTab('articles')} style={{ padding: '7px 18px', borderRadius: 6, fontSize: 13, fontWeight: 700, border: 'none', cursor: 'pointer', background: tab === 'articles' ? '#34d399' : '#374151', color: tab === 'articles' ? '#000' : '#fff' }}>Articles</button>
           <button onClick={() => setTab('subscribers')} style={{ padding: '7px 18px', borderRadius: 6, fontSize: 13, fontWeight: 700, border: 'none', cursor: 'pointer', background: tab === 'subscribers' ? '#34d399' : '#374151', color: tab === 'subscribers' ? '#000' : '#fff' }}>Subscribers</button>
           <button onClick={() => setAuthed(false)} style={{ padding: '7px 14px', borderRadius: 6, fontSize: 12, fontWeight: 700, border: 'none', cursor: 'pointer', background: '#ef4444', color: 'white', marginLeft: 8 }}>Logout</button>
         </div>
@@ -192,6 +233,73 @@ export default function AdminPage() {
                     <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
                       <button onClick={() => startEdit(book)} style={{ fontSize: 13, background: '#f3f4f6', padding: '8px 16px', borderRadius: 8, border: 'none', cursor: 'pointer', fontWeight: 600 }}>Edit</button>
                       <button onClick={() => deleteBook(book.id)} style={{ fontSize: 13, background: '#fef2f2', color: '#dc2626', padding: '8px 16px', borderRadius: 8, border: 'none', cursor: 'pointer', fontWeight: 600 }}>Delete</button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </>
+        )}
+
+        {tab === 'articles' && (
+          <>
+            <div style={{ background: 'white', borderRadius: 12, boxShadow: '0 2px 12px rgba(0,0,0,0.08)', padding: '32px', marginBottom: 28 }}>
+              <h2 style={{ fontSize: 18, fontWeight: 900, marginBottom: 24, marginTop: 0 }}>{articleEditId ? 'Edit Article' : 'New Article'}</h2>
+              {articleMsg && <p style={{ color: '#16a34a', fontWeight: 700, fontSize: 13, marginBottom: 16 }}>{articleMsg}</p>}
+              <form onSubmit={handleArticleSubmit}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 16, marginBottom: 16 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    <label style={{ fontSize: 11, fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Tag *</label>
+                    <input style={{ border: '1px solid #d1d5db', borderRadius: 8, padding: '10px 14px', fontSize: 14, outline: 'none' }} placeholder="e.g. Leadership" value={articleForm.tag} onChange={e => setArticleForm({ ...articleForm, tag: e.target.value })} required />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    <label style={{ fontSize: 11, fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Title *</label>
+                    <input style={{ border: '1px solid #d1d5db', borderRadius: 8, padding: '10px 14px', fontSize: 14, outline: 'none' }} value={articleForm.title} onChange={e => setArticleForm({ ...articleForm, title: e.target.value })} required />
+                  </div>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 16 }}>
+                  <label style={{ fontSize: 11, fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Excerpt * (short summary shown on card)</label>
+                  <textarea rows={2} style={{ border: '1px solid #d1d5db', borderRadius: 8, padding: '10px 14px', fontSize: 14, outline: 'none', resize: 'vertical', fontFamily: 'Arial, sans-serif' }} value={articleForm.excerpt} onChange={e => setArticleForm({ ...articleForm, excerpt: e.target.value })} required />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 16 }}>
+                  <label style={{ fontSize: 11, fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Full Content *</label>
+                  <textarea rows={10} style={{ border: '1px solid #d1d5db', borderRadius: 8, padding: '10px 14px', fontSize: 14, outline: 'none', resize: 'vertical', fontFamily: 'Arial, sans-serif', lineHeight: 1.7 }} value={articleForm.content} onChange={e => setArticleForm({ ...articleForm, content: e.target.value })} required />
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
+                  <input type="checkbox" id="art-published" checked={articleForm.published} onChange={e => setArticleForm({ ...articleForm, published: e.target.checked })} style={{ width: 16, height: 16, accentColor: '#34d399' }} />
+                  <label htmlFor="art-published" style={{ fontSize: 14, fontWeight: 600 }}>Published (visible on site)</label>
+                </div>
+                <div style={{ display: 'flex', gap: 12 }}>
+                  <button type="submit" disabled={articleLoading} style={{ background: '#34d399', color: '#000', fontWeight: 900, padding: '11px 28px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 14, opacity: articleLoading ? 0.6 : 1 }}>
+                    {articleLoading ? 'Saving...' : articleEditId ? 'Update Article' : 'Publish Article'}
+                  </button>
+                  {articleEditId && (
+                    <button type="button" onClick={() => { setArticleEditId(null); setArticleForm({ tag: '', title: '', excerpt: '', content: '', published: true }); setArticleMsg('') }} style={{ background: '#e5e7eb', color: '#374151', fontWeight: 700, padding: '11px 22px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 14 }}>Cancel</button>
+                  )}
+                </div>
+              </form>
+            </div>
+
+            <div style={{ background: 'white', borderRadius: 12, boxShadow: '0 2px 12px rgba(0,0,0,0.08)', overflow: 'hidden' }}>
+              <div style={{ padding: '20px 28px', borderBottom: '1px solid #f3f4f6' }}>
+                <h2 style={{ fontSize: 18, fontWeight: 900, margin: 0 }}>All Articles ({articles.length})</h2>
+              </div>
+              {articles.length === 0 ? (
+                <div style={{ padding: '48px', textAlign: 'center', color: '#9ca3af', fontSize: 14 }}>No articles yet. Write your first article above.</div>
+              ) : (
+                articles.map(a => (
+                  <div key={a.id} style={{ padding: '20px 28px', borderBottom: '1px solid #f9fafb', display: 'flex', alignItems: 'flex-start', gap: 16 }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                        <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#4b5320' }}>{a.tag}</span>
+                        <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 999, fontWeight: 700, background: a.published ? '#d1fae5' : '#f3f4f6', color: a.published ? '#065f46' : '#6b7280' }}>{a.published ? 'Published' : 'Draft'}</span>
+                      </div>
+                      <p style={{ fontWeight: 700, fontSize: 15, margin: '0 0 4px' }}>{a.title}</p>
+                      <p style={{ fontSize: 13, color: '#6b7280', margin: 0 }}>{a.excerpt}</p>
+                    </div>
+                    <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+                      <button onClick={() => startEditArticle(a)} style={{ fontSize: 13, background: '#f3f4f6', padding: '8px 16px', borderRadius: 8, border: 'none', cursor: 'pointer', fontWeight: 600 }}>Edit</button>
+                      <button onClick={() => deleteArticle(a.id)} style={{ fontSize: 13, background: '#fef2f2', color: '#dc2626', padding: '8px 16px', borderRadius: 8, border: 'none', cursor: 'pointer', fontWeight: 600 }}>Delete</button>
                     </div>
                   </div>
                 ))

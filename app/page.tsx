@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { supabase } from '@/lib/supabase'
-import { Books, House, Globe, Lightbulb, BookOpen, Globe as GlobeIcon, Handshake } from '@phosphor-icons/react'
+import { Books, House, Globe, Lightbulb, BookOpen, Globe as GlobeIcon, Handshake, LinkedinLogo, FacebookLogo, InstagramLogo, XLogo, YoutubeLogo } from '@phosphor-icons/react'
 
 const faqs = [
   { q: 'WHAT IS WEALTH SCHOOL AFRICA?', a: null },
@@ -13,12 +13,12 @@ const faqs = [
 ]
 
 const S: Record<string, React.CSSProperties> = {
-  nav: { position: 'sticky', top: 0, zIndex: 50, background: 'white', borderBottom: '1px solid #eee', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 40px' },
+  nav: { position: 'sticky', top: 0, zIndex: 50, background: 'white', borderBottom: '1px solid #eee', display: 'flex', alignItems: 'center', gap: 32, padding: '12px 40px' },
   navLink: { fontSize: 11, fontWeight: 700, letterSpacing: '0.15em', color: '#888', textDecoration: 'none', textTransform: 'uppercase' as const },
-  navCenter: { position: 'absolute', left: '50%', transform: 'translateX(-50%)', textAlign: 'center' as const },
+  navCenter: { textAlign: 'left' as const },
   navTitle: { fontSize: 28, fontWeight: 400, letterSpacing: '0.15em', textTransform: 'uppercase' as const, lineHeight: '1' },
   navSub: { fontSize: 11, letterSpacing: '0.12em', color: '#aaa', textTransform: 'uppercase' as const, marginTop: 2 },
-  navBtn: { fontSize: 11, fontWeight: 900, padding: '8px 22px', borderRadius: 999, textTransform: 'uppercase' as const, letterSpacing: '0.12em', background: '#d4e600', color: '#000', textDecoration: 'none', border: '2px solid #b8cc00' },
+  navBtn: { fontSize: 13, fontWeight: 900, padding: '16px 28px', borderRadius: 999, textTransform: 'uppercase' as const, letterSpacing: '0.12em', background: '#4b5320', color: '#fff', textDecoration: 'none', border: '2px solid #3a4119' },
 }
 
 export default function Home() {
@@ -55,6 +55,8 @@ export default function Home() {
         .footer-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 40px; margin-bottom: 56px; }
         .footer-bottom { display: flex; justify-content: space-between; font-size: 11px; color: #555; }
         .desc-buttons { display: inline-grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .hero-inner { display: flex; align-items: flex-end; justify-content: space-between; padding: 48px 40px 0; min-height: 420px; }
+        .hero-photo { flex-shrink: 0; align-self: flex-end; width: 460px; height: 560px; }
         @media (max-width: 768px) {
           .nav-links { display: none; }
           .nav-btn { display: none; }
@@ -67,39 +69,86 @@ export default function Home() {
           .desc-buttons { grid-template-columns: 1fr; width: 100%; }
           .footer-email { font-size: 18px !important; }
           .footer-right { text-align: left !important; }
+          .hero-inner { flex-direction: column; align-items: flex-start; padding: 32px 24px 0 !important; min-height: 520px !important; }
+          .hero-photo { width: 100% !important; height: 280px !important; align-self: center; margin-top: 24px; }
         }
       `}</style>
 
       {/* NAV */}
       <nav style={S.nav}>
-        <div className="nav-links">
-          <a href="/about" style={S.navLink}>About Me</a>
-          <a href="/my-work" style={S.navLink}>My Work</a>
-        </div>
         <div className="nav-center">
           <div style={S.navTitle}>Theogene Sibomana</div>
           <div style={S.navSub}>Ideas. Leadership. Impact.</div>
+        </div>
+        <div className="nav-links" style={{ flex: 1 }}>
+          <a href="/" style={S.navLink}>Home</a>
+          <a href="/about" style={S.navLink}>About Me</a>
+          <a href="/my-work" style={S.navLink}>My Work</a>
+          <a href="/books" style={S.navLink}>Books</a>
+          <a href="/ideas" style={S.navLink}>Ideas</a>
         </div>
         <a href="/contact" className="nav-btn" style={S.navBtn}>Let&apos;s Connect &rarr;</a>
       </nav>
 
       {/* HERO */}
-      <section style={{ position: 'relative', background: '#d4e600', overflow: 'visible', padding: '32px 16px 0', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <div style={{ position: 'relative', display: 'inline-block', marginBottom: -60, zIndex: 10, marginTop: 32 }}>
-          <div style={{ width: 340, height: 440, boxShadow: '0 24px 64px rgba(0,0,0,0.3)', overflow: 'hidden', border: '3px solid #111' }}>
-            <Image src="/Book cover.jpeg" alt="Book Cover" width={340} height={440} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+      <section style={{ position: 'relative', overflow: 'hidden', minHeight: 420 }}>
+        {/* Kigali city background */}
+        <Image
+          src="/city of kigali.jpg"
+          alt="City of Kigali"
+          fill
+          style={{ objectFit: 'cover', objectPosition: 'center top' }}
+          priority
+        />
+        {/* Dark overlay */}
+        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.45)' }} />
+
+        {/* Content row */}
+        <div className="hero-inner" style={{ position: 'relative', zIndex: 2, maxWidth: 980, margin: '0 auto', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', padding: '48px 40px 0', minHeight: 420 }}>
+
+          {/* Left — text */}
+          <div style={{ flex: 1, paddingBottom: 56, maxWidth: 600 }}>
+            <h1 style={{ fontSize: 48, fontWeight: 900, lineHeight: 1.1, color: 'white', margin: '0 0 8px', fontFamily: 'Georgia, serif', whiteSpace: 'nowrap' }}>
+              Theogene Sibomana
+            </h1>
+            <p style={{ fontSize: 22, fontStyle: 'italic', fontWeight: 400, color: 'white', margin: '0 0 24px', fontFamily: 'Georgia, serif', whiteSpace: 'nowrap' }}>
+              Ideas. Leadership. Impact.
+            </p>
+            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', lineHeight: 1.75, margin: '0 0 32px', whiteSpace: 'nowrap' }}>
+              Building ideas, developing people,<br />
+              and creating practical solutions for sustainable growth.
+            </p>
+            <a
+              href="/my-work"
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 10,
+                background: 'white', color: '#1a2a3a',
+                padding: '12px 28px', borderRadius: 999,
+                fontSize: 13, fontWeight: 700, letterSpacing: '0.06em',
+                textDecoration: 'none', boxShadow: '0 2px 12px rgba(0,0,0,0.15)',
+                border: '1.5px solid rgba(0,0,0,0.1)',
+              }}
+            >
+              Discover My Work &nbsp;→
+            </a>
           </div>
-          <a href="/books" style={{ position: 'absolute', right: -60, bottom: 40, width: 130, height: 130, borderRadius: '50%', background: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', fontSize: 15, fontWeight: 900, lineHeight: 1.6, color: '#111', boxShadow: '0 4px 24px rgba(0,0,0,0.35)', letterSpacing: '0.02em', textDecoration: 'none' }}>
-            <span>BUY</span>
-            <em style={{ fontFamily: 'Georgia,serif', fontSize: 13, fontStyle: 'italic', fontWeight: 400 }}>the</em>
-            <span>BOOK</span>
-            <span>NOW</span>
-          </a>
+
+          {/* Right — profile photo */}
+          <div className="hero-photo" style={{ flexShrink: 0, alignSelf: 'flex-end', position: 'relative', width: 460, height: 560, filter: 'drop-shadow(0 0 18px rgba(255,255,255,0.85)) drop-shadow(0 0 6px rgba(255,255,255,1))' }}>
+            <Image
+              src="/Theo profile image.png"
+              alt="Theogene Sibomana"
+              width={460}
+              height={560}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top', display: 'block' }}
+              priority
+            />
+          </div>
         </div>
       </section>
 
       {/* DESCRIPTION */}
-      <section style={{ maxWidth: 580, margin: '0 auto', padding: '100px 32px 60px', textAlign: 'center' }}>
+      <section style={{ maxWidth: 580, margin: '0 auto', padding: '72px 32px 60px', textAlign: 'center' }}>
         <p style={{ color: '#555', lineHeight: 1.85, marginBottom: 40, fontSize: 14 }}>
           Building ideas, developing people, and creating practical solutions for sustainable growth. Through entrepreneurship, authorship and education, Theogene Sibomana empowers individuals and institutions across Africa to create lasting wealth and impact.
         </p>
@@ -112,7 +161,7 @@ export default function Home() {
           {[
             { label: 'My Books', Icon: Books, bg: '#1a1a1a', color: 'white', href: '/books' },
             { label: 'Igeno Gate Rwanda', Icon: House, bg: '#1a1a1a', color: 'white', href: '/my-work' },
-            { label: 'Wealth School Africa', Icon: Globe, bg: '#d4e600', color: '#000', href: '/my-work' },
+            { label: 'Wealth School Africa', Icon: Globe, bg: '#4b5320', color: '#fff', href: '/my-work' },
             { label: 'Ideas & Insights', Icon: Lightbulb, bg: '#1a1a1a', color: 'white', href: '/ideas' },
           ].map(s => (
             <a key={s.label} href={s.href} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, background: s.bg, color: s.color, padding: '20px 32px', borderRadius: 999, fontSize: 14, fontWeight: 900, letterSpacing: '0.08em', textDecoration: 'none', textTransform: 'uppercase' as const, whiteSpace: 'nowrap' }}>
@@ -123,23 +172,23 @@ export default function Home() {
       </section>
 
       {/* ABOUT SECTION */}
-      <section style={{ background: '#d4e600', padding: '72px 0 0', position: 'relative', overflow: 'hidden' }}>
+      <section style={{ background: '#4b5320', padding: '72px 0 0', position: 'relative', overflow: 'hidden' }}>
         <div className="about-inner" style={{ maxWidth: 920, margin: '0 auto', padding: '0 40px 72px' }}>
           <div style={{ flexShrink: 0, position: 'relative', width: 280, height: 360 }}>
             <div style={{ position: 'absolute', left: 8, top: 30, width: 44, height: 290, background: '#2b8fc9', borderRadius: 22, opacity: 0.85, transform: 'rotate(-6deg)' }} />
             <div style={{ position: 'absolute', left: 38, top: 10, width: 24, height: 170, background: '#2b8fc9', borderRadius: 12, opacity: 0.6, transform: 'rotate(-3deg)' }} />
             <div style={{ position: 'absolute', left: 60, top: 0, width: 210, height: 340, overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,0,0,0.3)' }}>
-              <Image src="/Theo profile image.png" alt="Theogene Sibomana" width={210} height={340} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <Image src="/Theo profile image - Copy.png" alt="Theogene Sibomana" width={210} height={340} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
           </div>
           <div style={{ flex: 1 }}>
-            <h2 style={{ fontSize: 42, fontWeight: 900, lineHeight: 1.2, marginBottom: 24 }}>
+            <h2 style={{ fontSize: 42, fontWeight: 900, lineHeight: 1.2, marginBottom: 24, color: 'white' }}>
               ABOUT <em style={{ fontFamily: 'Georgia,serif', fontWeight: 400 }}>Theogene</em> SIBOMANA
             </h2>
-            <p style={{ color: '#333', lineHeight: 1.85, marginBottom: 18, fontSize: 14 }}>
+            <p style={{ color: 'white', lineHeight: 1.85, marginBottom: 18, fontSize: 14 }}>
               I am an entrepreneur, author and educator, passionate about empowering people, strengthening institutions and promoting wealth creation through knowledge.
             </p>
-            <p style={{ color: '#333', lineHeight: 1.85, fontSize: 14 }}>
+            <p style={{ color: 'white', lineHeight: 1.85, fontSize: 14 }}>
               Through Igeno Gate Rwanda and Wealth School Africa, I contribute to care &amp; family wellbeing and wealth education &mdash; building a more educated, healthy and prosperous Africa.
             </p>
           </div>
@@ -178,8 +227,8 @@ export default function Home() {
               { src: '/Books/book3.jpg', title: 'Leadership For Impact' },
               { src: '/Books/book4.jpeg', title: 'Wealth School Africa' },
             ].map((book, i) => (
-              <div key={i} style={{ flexShrink: 0, width: 140, height: 190, overflow: 'hidden', boxShadow: '0 12px 36px rgba(0,0,0,0.5)', border: '3px solid rgba(255,255,255,0.1)', transform: i % 2 === 0 ? 'rotate(-2deg)' : 'rotate(2deg)' }}>
-                <Image src={book.src} alt={book.title} width={140} height={190} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <div key={i} style={{ flexShrink: 0, width: 220, height: 300, overflow: 'hidden', boxShadow: '0 12px 36px rgba(0,0,0,0.5)', border: '3px solid rgba(255,255,255,0.1)', transform: i % 2 === 0 ? 'rotate(-2deg)' : 'rotate(2deg)' }}>
+                <Image src={book.src} alt={book.title} width={220} height={300} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
             ))}
           </div>
@@ -200,7 +249,7 @@ export default function Home() {
             <div style={{ width: 210, height: 270, borderRadius: '50% 50% 6px 6px / 30% 30% 6px 6px', overflow: 'hidden', boxShadow: '0 24px 56px rgba(0,0,0,0.55)' }}>
               <Image src="/Books/book1.jpg" alt="Wealth School Africa" width={210} height={270} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
-            <div style={{ position: 'absolute', top: -14, right: -22, width: 92, height: 92, borderRadius: '50%', background: '#d4e600', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', fontSize: 9.5, fontWeight: 900, lineHeight: 1.45, color: '#1a1a1a', boxShadow: '0 4px 20px rgba(0,0,0,0.4)' }}>
+            <div style={{ position: 'absolute', top: -14, right: -22, width: 92, height: 92, borderRadius: '50%', background: '#4b5320', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', fontSize: 9.5, fontWeight: 900, lineHeight: 1.45, color: '#fff', boxShadow: '0 4px 20px rgba(0,0,0,0.4)' }}>
               GET THE<br /><em style={{ fontFamily: 'Georgia,serif', fontSize: 12, fontStyle: 'italic' }}>book</em><br />NOW
             </div>
           </div>
@@ -223,9 +272,9 @@ export default function Home() {
               { Icon: GlobeIcon, label: 'Join Wealth School Africa', yellow: true },
               { Icon: Handshake, label: 'Partner with Igeno Gate Rwanda', yellow: false },
             ].map(s => (
-              <div key={s.label} style={{ background: s.yellow ? '#d4e600' : 'white', borderRadius: 16, padding: '44px 20px', boxShadow: '0 4px 20px rgba(0,0,0,0.07)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18 }}>
-                <s.Icon size={48} weight="duotone" />
-                <p style={{ fontWeight: 700, fontSize: 14, color: '#333' }}>{s.label}</p>
+              <div key={s.label} style={{ background: s.yellow ? '#4b5320' : 'white', borderRadius: 16, padding: '44px 20px', boxShadow: '0 4px 20px rgba(0,0,0,0.07)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18 }}>
+                <s.Icon size={48} weight="duotone" color={s.yellow ? 'white' : 'currentColor'} />
+                <p style={{ fontWeight: 700, fontSize: 14, color: s.yellow ? '#fff' : '#333' }}>{s.label}</p>
               </div>
             ))}
           </div>
@@ -244,9 +293,9 @@ export default function Home() {
           <form onSubmit={handleTourSubmit} style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
             <input style={{ flex: '1 1 160px', padding: '13px 18px', borderRadius: 8, border: 'none', outline: 'none', fontSize: 13 }} placeholder="YOUR NAME" value={tourName} onChange={e => setTourName(e.target.value)} required />
             <input type="email" style={{ flex: '1 1 160px', padding: '13px 18px', borderRadius: 8, border: 'none', outline: 'none', fontSize: 13 }} placeholder="EMAIL ADDRESS" value={tourEmail} onChange={e => setTourEmail(e.target.value)} required />
-            <button type="submit" style={{ background: '#d4e600', color: '#000', fontWeight: 900, padding: '13px 30px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase' as const }}>Submit</button>
+            <button type="submit" style={{ background: '#4b5320', color: '#fff', fontWeight: 900, padding: '13px 30px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase' as const }}>Submit</button>
           </form>
-          {tourMsg && <p style={{ marginTop: 18, color: '#d4e600', fontWeight: 700 }}>{tourMsg}</p>}
+          {tourMsg && <p style={{ marginTop: 18, color: '#4b5320', fontWeight: 700 }}>{tourMsg}</p>}
         </div>
       </section>
 
@@ -271,18 +320,18 @@ export default function Home() {
       </section>
 
       {/* NEWSLETTER */}
-      <section style={{ background: '#d4e600', padding: '72px 32px' }}>
+      <section style={{ background: '#4b5320', padding: '72px 32px' }}>
         <div style={{ maxWidth: 580, margin: '0 auto', textAlign: 'center' }}>
-          <p style={{ fontSize: 10, fontWeight: 900, letterSpacing: '0.25em', textTransform: 'uppercase' as const, color: '#666', marginBottom: 14 }}>Ideas. Leadership. Impact.</p>
-          <h2 style={{ fontSize: 34, fontWeight: 900, lineHeight: 1.3, marginBottom: 18 }}>
+          <p style={{ fontSize: 10, fontWeight: 900, letterSpacing: '0.25em', textTransform: 'uppercase' as const, color: '#c8d4a0', marginBottom: 14 }}>Ideas. Leadership. Impact.</p>
+          <h2 style={{ fontSize: 34, fontWeight: 900, lineHeight: 1.3, marginBottom: 18, color: 'white' }}>
             GET <em style={{ fontFamily: 'Georgia,serif', fontWeight: 400 }}>Theogene Sibomana&apos;s</em> IDEAS &amp; INSIGHTS
           </h2>
-          <p style={{ color: '#555', fontSize: 13, lineHeight: 1.85, marginBottom: 36 }}>
+          <p style={{ color: '#c8d4a0', fontSize: 13, lineHeight: 1.85, marginBottom: 36 }}>
             Monthly, Theogene shares practical insights on leadership, wealth creation and personal growth. Join the journey toward a more educated, healthy and prosperous Africa!
           </p>
           <form onSubmit={handleNewsSubmit} style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-            <input style={{ flex: '1 1 140px', padding: '13px 18px', borderRadius: 8, border: '1px solid #ccc', outline: 'none', fontSize: 13 }} placeholder="YOUR NAME" value={newsName} onChange={e => setNewsName(e.target.value)} required />
-            <input type="email" style={{ flex: '1 1 140px', padding: '13px 18px', borderRadius: 8, border: '1px solid #ccc', outline: 'none', fontSize: 13 }} placeholder="EMAIL ADDRESS" value={newsEmail} onChange={e => setNewsEmail(e.target.value)} required />
+            <input style={{ flex: '1 1 140px', padding: '13px 18px', borderRadius: 8, border: '1px solid #ccc', outline: 'none', fontSize: 13, background: '#e0e0e0' }} placeholder="YOUR NAME" value={newsName} onChange={e => setNewsName(e.target.value)} required />
+            <input type="email" style={{ flex: '1 1 140px', padding: '13px 18px', borderRadius: 8, border: '1px solid #ccc', outline: 'none', fontSize: 13, background: '#e0e0e0' }} placeholder="EMAIL ADDRESS" value={newsEmail} onChange={e => setNewsEmail(e.target.value)} required />
             <button type="submit" style={{ background: '#1a1a1a', color: 'white', fontWeight: 900, padding: '13px 22px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 20 }}>&#8250;</button>
           </form>
           {newsMsg && <p style={{ margin: '18px 0 0 0', fontWeight: 700 }}>{newsMsg}</p>}
@@ -311,7 +360,13 @@ export default function Home() {
                   <a href={h} style={{ color: 'white', textDecoration: 'none', fontSize: 15, fontWeight: 500 }}>{l}</a>
                 </p>
               ))}
-
+              <div style={{ display: 'flex', gap: 14, justifyContent: 'flex-end', marginTop: 20 }}>
+                <a href="https://rw.linkedin.com/in/theogene-sibomana-rn-152464161" target="_blank" rel="noopener noreferrer" style={{ color: '#888', transition: 'color 0.2s' }} onMouseEnter={e => (e.currentTarget.style.color='white')} onMouseLeave={e => (e.currentTarget.style.color='#888')}><LinkedinLogo size={22} weight="fill" /></a>
+                <a href="https://www.facebook.com/ihca.iwawe/" target="_blank" rel="noopener noreferrer" style={{ color: '#888', transition: 'color 0.2s' }} onMouseEnter={e => (e.currentTarget.style.color='white')} onMouseLeave={e => (e.currentTarget.style.color='#888')}><FacebookLogo size={22} weight="fill" /></a>
+                <a href="https://www.instagram.com/theosibo1?utm_source=qr&gwpx=eWcyaG9qeTZ4d3N5" target="_blank" rel="noopener noreferrer" style={{ color: '#888', transition: 'color 0.2s' }} onMouseEnter={e => (e.currentTarget.style.color='white')} onMouseLeave={e => (e.currentTarget.style.color='#888')}><InstagramLogo size={22} weight="fill" /></a>
+                <a href="https://x.com/Theosibo1" target="_blank" rel="noopener noreferrer" style={{ color: '#888', transition: 'color 0.2s' }} onMouseEnter={e => (e.currentTarget.style.color='white')} onMouseLeave={e => (e.currentTarget.style.color='#888')}><XLogo size={22} weight="fill" /></a>
+                <a href="https://youtube.com/@theosibo1?si=DG_n1OCMEPtP2GAO" target="_blank" rel="noopener noreferrer" style={{ color: '#888', transition: 'color 0.2s' }} onMouseEnter={e => (e.currentTarget.style.color='white')} onMouseLeave={e => (e.currentTarget.style.color='#888')}><YoutubeLogo size={22} weight="fill" /></a>
+              </div>
             </div>
           </div>
           <div className="footer-bottom" style={{ borderTop: '1px solid #222', paddingTop: 24 }}>
