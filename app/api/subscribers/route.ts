@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import nodemailer from 'nodemailer'
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
 
 export async function POST(req: NextRequest) {
   const { name, email, type } = await req.json()
@@ -8,6 +14,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
   }
 
+  // Save to Supabase
+  await supabase.from('subscribers').insert({ name, email, type })
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {

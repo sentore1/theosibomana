@@ -8,19 +8,24 @@ type Book = {
   author: string
   description: string
   cover_url: string
+  price: string
   buy_links: { store: string; url: string }[]
   published: boolean
   created_at: string
 }
 
-const emptyForm = { title: '', author: '', description: '', cover_url: '', buy_links: '[]', published: true }
+type BuyLink = { store: string; url: string }
 
-const ADMIN_PASSWORD = 'admin2024'
+const emptyForm = { title: '', author: '', description: '', cover_url: '', price: '', buy_links: '[]', published: true }
+
+const ADMIN_EMAIL = 'theogenesiboo@gmail.com'
 
 export default function AdminPage() {
   const [authed, setAuthed] = useState(false)
+  const [email, setEmail] = useState('')
   const [pw, setPw] = useState('')
   const [pwErr, setPwErr] = useState('')
+  const [loginLoading, setLoginLoading] = useState(false)
 
   const [books, setBooks] = useState<Book[]>([])
   const [form, setForm] = useState(emptyForm)
@@ -34,6 +39,15 @@ export default function AdminPage() {
   const [articleEditId, setArticleEditId] = useState<number | null>(null)
   const [articleMsg, setArticleMsg] = useState('')
   const [articleLoading, setArticleLoading] = useState(false)
+  const [coverFile, setCoverFile] = useState<File | null>(null)
+  const [coverPreview, setCoverPreview] = useState('')
+  const [buyLinks, setBuyLinks] = useState<BuyLink[]>([{ store: '', url: '' }])
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session?.user?.email === ADMIN_EMAIL) setAuthed(true)
+    })
+  }, [])
 
   useEffect(() => { if (authed) { fetchBooks(); fetchSubscribers(); fetchArticles() } }, [authed])
 
@@ -85,9 +99,17 @@ export default function AdminPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
-    let buy_links
-    try { buy_links = JSON.parse(form.buy_links) } catch { buy_links = [] }
-    const payload = { title: form.title, author: form.author, description: form.description, cover_url: form.cover_url, buy_links, published: form.published }
+    let cover_url = form.cover_url
+    if (coverFile) {
+      const ext = coverFile.name.split('.').pop()
+      const path = `${Date.now()}.${ext}`
+      const { error: upErr } = await supabase.storage.from('book-covers').upload(path, coverFile)
+      if (upErr) { setMsg(`Image upload failed: ${upErr.message}`); setLoading(false); return }
+      const { data: urlData } = supabase.storage.from('book-covers').getPublicUrl(path)
+      cover_url = urlData.publicUrl
+    }
+    const buy_links = buyLinks.filter(l => l.store || l.url)
+    const payload = { title: form.title, author: form.author, description: form.description, cover_url, price: form.price, buy_links, published: form.published }
     if (editId) {
       const { error } = await supabase.from('books').update(payload).eq('id', editId)
       setMsg(error ? 'Error updating.' : 'Book updated!')
@@ -95,12 +117,15 @@ export default function AdminPage() {
       const { error } = await supabase.from('books').insert(payload)
       setMsg(error ? 'Error adding.' : 'Book added!')
     }
-    setForm(emptyForm); setEditId(null); setLoading(false); fetchBooks()
+    setForm(emptyForm); setCoverFile(null); setCoverPreview(''); setBuyLinks([{ store: '', url: '' }]); setEditId(null); setLoading(false); fetchBooks()
   }
 
   function startEdit(book: Book) {
     setEditId(book.id)
-    setForm({ title: book.title, author: book.author, description: book.description, cover_url: book.cover_url, buy_links: JSON.stringify(book.buy_links || []), published: book.published })
+    setForm({ title: book.title, author: book.author, description: book.description, cover_url: book.cover_url, price: book.price || '', buy_links: '[]', published: book.published })
+    setCoverFile(null)
+    setCoverPreview(book.cover_url || '')
+    setBuyLinks(book.buy_links?.length ? book.buy_links : [{ store: '', url: '' }])
     setMsg('')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -116,10 +141,24 @@ export default function AdminPage() {
     return (
       <div style={{ minHeight: '100vh', background: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ background: 'white', borderRadius: 16, padding: '48px 40px', width: '100%', maxWidth: 380, boxShadow: '0 24px 64px rgba(0,0,0,0.4)' }}>
-          <form onSubmit={e => { e.preventDefault(); if (pw === ADMIN_PASSWORD) { setAuthed(true); setPwErr('') } else setPwErr('Incorrect password.')}}>
+          <form onSubmit={async e => {
+            e.preventDefault()
+            setLoginLoading(true)
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password: pw })
+            setLoginLoading(false)
+            if (error || data.user?.email !== ADMIN_EMAIL) {
+              await supabase.auth.signOut()
+              setPwErr('Invalid email or password.')
+            } else {
+              setAuthed(true)
+              setPwErr('')
+            }
+          }}>
             <input
               type="email"
               placeholder="Email address"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
               style={{ width: '100%', padding: '12px 16px', borderRadius: 8, border: '1px solid #ddd', fontSize: 14, outline: 'none', marginBottom: 12, boxSizing: 'border-box' }}
               autoFocus
             />
@@ -131,8 +170,8 @@ export default function AdminPage() {
               style={{ width: '100%', padding: '12px 16px', borderRadius: 8, border: '1px solid #ddd', fontSize: 14, outline: 'none', marginBottom: 12, boxSizing: 'border-box' }}
             />
             {pwErr && <p style={{ color: 'red', fontSize: 13, marginBottom: 10 }}>{pwErr}</p>}
-            <button type="submit" style={{ width: '100%', background: '#4b5320', color: '#fff', fontWeight: 900, padding: '12px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 14, letterSpacing: '0.08em' }}>
-              LOGIN →
+            <button type="submit" disabled={loginLoading} style={{ width: '100%', background: '#4b5320', color: '#fff', fontWeight: 900, padding: '12px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 14, letterSpacing: '0.08em', opacity: loginLoading ? 0.6 : 1 }}>
+              {loginLoading ? 'Signing in...' : 'LOGIN →'}
             </button>
           </form>
         </div>
@@ -153,7 +192,7 @@ export default function AdminPage() {
           <button onClick={() => setTab('books')} style={{ padding: '7px 18px', borderRadius: 6, fontSize: 13, fontWeight: 700, border: 'none', cursor: 'pointer', background: tab === 'books' ? '#34d399' : '#374151', color: tab === 'books' ? '#000' : '#fff' }}>Books</button>
           <button onClick={() => setTab('articles')} style={{ padding: '7px 18px', borderRadius: 6, fontSize: 13, fontWeight: 700, border: 'none', cursor: 'pointer', background: tab === 'articles' ? '#34d399' : '#374151', color: tab === 'articles' ? '#000' : '#fff' }}>Articles</button>
           <button onClick={() => setTab('subscribers')} style={{ padding: '7px 18px', borderRadius: 6, fontSize: 13, fontWeight: 700, border: 'none', cursor: 'pointer', background: tab === 'subscribers' ? '#34d399' : '#374151', color: tab === 'subscribers' ? '#000' : '#fff' }}>Subscribers</button>
-          <button onClick={() => setAuthed(false)} style={{ padding: '7px 14px', borderRadius: 6, fontSize: 12, fontWeight: 700, border: 'none', cursor: 'pointer', background: '#ef4444', color: 'white', marginLeft: 8 }}>Logout</button>
+          <button onClick={async () => { await supabase.auth.signOut(); setAuthed(false) }} style={{ padding: '7px 14px', borderRadius: 6, fontSize: 12, fontWeight: 700, border: 'none', cursor: 'pointer', background: '#ef4444', color: 'white', marginLeft: 8 }}>Logout</button>
         </div>
       </div>
 
@@ -181,13 +220,29 @@ export default function AdminPage() {
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Cover Image URL</label>
-                    <input style={{ border: '1px solid #d1d5db', borderRadius: 8, padding: '10px 14px', fontSize: 14, outline: 'none' }} placeholder="https://..." value={form.cover_url} onChange={e => setForm({ ...form, cover_url: e.target.value })} />
+                    <label style={{ fontSize: 11, fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Cover Image</label>
+                    <input type="file" accept="image/*" onChange={e => {
+                      const file = e.target.files?.[0] || null
+                      setCoverFile(file)
+                      setCoverPreview(file ? URL.createObjectURL(file) : '')
+                    }} style={{ border: '1px solid #d1d5db', borderRadius: 8, padding: '8px 14px', fontSize: 13, outline: 'none', cursor: 'pointer' }} />
+                    {coverPreview && <img src={coverPreview} alt="preview" style={{ width: 60, height: 80, objectFit: 'cover', borderRadius: 6, marginTop: 6 }} />}
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Buy Links (JSON)</label>
-                    <input style={{ border: '1px solid #d1d5db', borderRadius: 8, padding: '10px 14px', fontSize: 13, outline: 'none', fontFamily: 'monospace' }} placeholder='[{"store":"Amazon","url":"https://..."}]' value={form.buy_links} onChange={e => setForm({ ...form, buy_links: e.target.value })} />
+                    <label style={{ fontSize: 11, fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Price (e.g. RWF 5,000)</label>
+                    <input style={{ border: '1px solid #d1d5db', borderRadius: 8, padding: '10px 14px', fontSize: 14, outline: 'none' }} placeholder="e.g. RWF 5,000" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} />
                   </div>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
+                  <label style={{ fontSize: 11, fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Buy Links</label>
+                  {buyLinks.map((link, i) => (
+                    <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 2fr auto', gap: 8, alignItems: 'center' }}>
+                      <input placeholder="Store (e.g. Amazon)" value={link.store} onChange={e => { const u = [...buyLinks]; u[i].store = e.target.value; setBuyLinks(u) }} style={{ border: '1px solid #d1d5db', borderRadius: 8, padding: '9px 12px', fontSize: 13, outline: 'none' }} />
+                      <input placeholder="URL (https://...)" value={link.url} onChange={e => { const u = [...buyLinks]; u[i].url = e.target.value; setBuyLinks(u) }} style={{ border: '1px solid #d1d5db', borderRadius: 8, padding: '9px 12px', fontSize: 13, outline: 'none' }} />
+                      <button type="button" onClick={() => setBuyLinks(buyLinks.filter((_, j) => j !== i))} style={{ background: '#fef2f2', color: '#dc2626', border: 'none', borderRadius: 8, padding: '9px 12px', cursor: 'pointer', fontWeight: 700, fontSize: 13 }}>✕</button>
+                    </div>
+                  ))}
+                  <button type="button" onClick={() => setBuyLinks([...buyLinks, { store: '', url: '' }])} style={{ alignSelf: 'flex-start', background: '#f3f4f6', border: 'none', borderRadius: 8, padding: '8px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>+ Add Link</button>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
                   <input type="checkbox" id="published" checked={form.published} onChange={e => setForm({ ...form, published: e.target.checked })} style={{ width: 16, height: 16, accentColor: '#34d399' }} />

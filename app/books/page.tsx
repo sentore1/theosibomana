@@ -1,20 +1,25 @@
 'use client'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { FilePdf, Package } from '@phosphor-icons/react'
 import Layout from '../components/Layout'
+import { supabase } from '@/lib/supabase'
 
-const books = [
-  { src: '/Book cover.jpeg', title: 'Wealth School Africa', sub: 'Build Wealth, Create Freedom', price: 'RWF 5,000' },
-  { src: '/Books/book1.jpg', title: 'Wealth School Africa', sub: 'Build Wealth, Create Freedom', price: 'RWF 5,000' },
-  { src: '/Books/book2.jpg', title: 'Personal Financial Success', sub: 'Plan • Save • Invest • Grow', price: 'RWF 4,500' },
-  { src: '/Books/book3.jpg', title: 'Leadership For Impact', sub: 'Lead with Purpose', price: 'RWF 4,500' },
-]
+type Book = {
+  id: number
+  title: string
+  description: string
+  cover_url: string
+  price: string
+  buy_links: { store: string; url: string }[]
+}
 
 const MOMO_NUMBER = '0788433298'
 const MOMO_NAME = 'Theogene Sibomana'
 
 export default function BooksPage() {
-  const [selected, setSelected] = useState<typeof books[0] | null>(null)
+  const [books, setBooks] = useState<Book[]>([])
+  const [selected, setSelected] = useState<Book | null>(null)
   const [file, setFile] = useState<File | null>(null)
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
@@ -24,7 +29,12 @@ export default function BooksPage() {
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  function openModal(book: typeof books[0]) {
+  useEffect(() => {
+    supabase.from('books').select('*').eq('published', true).order('created_at', { ascending: false })
+      .then(({ data }) => { if (data) setBooks(data) })
+  }, [])
+
+  function openModal(book: Book) {
     setSelected(book); setFile(null); setName(''); setPhone('')
     setBookType(''); setDeliveryAddress(''); setDeliveryEmail(''); setSubmitted(false)
   }
@@ -62,23 +72,30 @@ export default function BooksPage() {
           }
         `}</style>
         <section style={{ maxWidth: 1000, margin: '0 auto', padding: '80px 40px' }}>
-          <div className="books-grid">
-            {books.map((book, i) => (
-              <div key={i} style={{ boxShadow: '0 8px 32px rgba(0,0,0,0.1)', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ height: 340, overflow: 'hidden', background: '#f0f0f0' }}>
-                  <Image src={book.src} alt={book.title} width={320} height={340} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            {books.length === 0 ? (
+              <p style={{ textAlign: 'center', color: '#999', fontSize: 14 }}>No books available yet.</p>
+            ) : (
+            <div className="books-grid">
+              {books.map((book) => (
+                <div key={book.id} style={{ boxShadow: '0 8px 32px rgba(0,0,0,0.1)', display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ height: 340, overflow: 'hidden', background: '#f0f0f0' }}>
+                    {book.cover_url
+                      ? <img src={book.cover_url} alt={book.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ccc', fontSize: 13 }}>No cover</div>
+                    }
+                  </div>
+                  <div style={{ padding: '20px 24px', background: 'white', borderTop: '3px solid #4b5320', flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    <p style={{ fontWeight: 900, fontSize: 14, margin: 0 }}>{book.title}</p>
+                    <p style={{ fontSize: 12, color: '#888', margin: 0 }}>{book.description}</p>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: '#111', margin: 0 }}>{book.price}</p>
+                    <button onClick={() => openModal(book)} style={{ marginTop: 8, background: '#4b5320', border: '2px solid #3a4119', borderRadius: 999, padding: '9px 0', fontWeight: 900, fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase', cursor: 'pointer', width: '100%', color: 'white' }}>
+                      Buy Now
+                    </button>
+                  </div>
                 </div>
-                <div style={{ padding: '20px 24px', background: 'white', borderTop: '3px solid #4b5320', flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <p style={{ fontWeight: 900, fontSize: 14, margin: 0 }}>{book.title}</p>
-                  <p style={{ fontSize: 12, color: '#888', margin: 0 }}>{book.sub}</p>
-                  <p style={{ fontSize: 13, fontWeight: 700, color: '#111', margin: 0 }}>{book.price}</p>
-                  <button onClick={() => openModal(book)} style={{ marginTop: 8, background: '#4b5320', border: '2px solid #3a4119', borderRadius: 999, padding: '9px 0', fontWeight: 900, fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase', cursor: 'pointer', width: '100%' }}>
-                    Buy Now
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+            )}
         </section>
 
         {/* MODAL */}
@@ -88,7 +105,12 @@ export default function BooksPage() {
               <button onClick={closeModal} style={{ position: 'absolute', top: 16, right: 20, background: 'none', border: 'none', fontSize: 22, cursor: 'pointer', color: '#888' }}>✕</button>
               {submitted ? (
                 <div style={{ textAlign: 'center', padding: '20px 0' }}>
-                  <div style={{ fontSize: 48, marginBottom: 12 }}>✅</div>
+                  <div style={{ marginBottom: 12, display: 'flex', justifyContent: 'center' }}>
+                    <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="32" cy="32" r="32" fill="#4b5320"/>
+                      <path d="M18 33l10 10 18-20" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
                   <h2 style={{ fontWeight: 900, fontSize: 20, marginBottom: 8 }}>Order Received!</h2>
                   <p style={{ color: '#555', fontSize: 14 }}>Thank you <strong>{name}</strong>. Your payment proof has been submitted. We will confirm your order and {bookType === 'soft' ? `send the soft copy to ${deliveryEmail}` : `deliver the hard copy to your address`} shortly.</p>
                   <button onClick={closeModal} style={{ marginTop: 24, background: '#4b5320', border: '2px solid #3a4119', borderRadius: 999, padding: '10px 32px', fontWeight: 900, fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase', cursor: 'pointer' }}>Close</button>
@@ -96,7 +118,7 @@ export default function BooksPage() {
               ) : (
                 <>
                   <h2 style={{ fontWeight: 900, fontSize: 18, marginBottom: 4 }}>{selected.title}</h2>
-                  <p style={{ fontSize: 12, color: '#888', marginBottom: 20 }}>{selected.sub}</p>
+                  <p style={{ fontSize: 12, color: '#888', marginBottom: 20 }}>{selected.description}</p>
                   <div style={{ background: '#f9f9f9', border: '1px solid #eee', borderRadius: 8, padding: 16, marginBottom: 24 }}>
                     <Image src="/momo_mtna.png" alt="MTN MoMo" width={160} height={64} style={{ objectFit: 'contain', marginBottom: 10 }} />
                     <p style={{ fontWeight: 700, fontSize: 13, marginBottom: 8 }}>Pay via MoMo</p>
@@ -129,7 +151,7 @@ export default function BooksPage() {
                               color: bookType === type ? 'white' : '#555',
                             }}
                           >
-                            {type === 'soft' ? '📧 Soft Copy (PDF)' : '📦 Hard Copy (Physical)'}
+                          {type === 'soft' ? <><FilePdf size={18} weight="duotone" /> Soft Copy (PDF)</> : <><Package size={18} weight="duotone" /> Hard Copy (Physical)</>}
                           </button>
                         ))}
                       </div>

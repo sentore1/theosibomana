@@ -32,8 +32,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <nav style={{ position: 'sticky', top: 0, zIndex: 50, background: 'white', borderBottom: '1px solid #eee' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 32, padding: '12px 40px', position: 'relative' }}>
           <div className="nav-center">
-            <div style={{ fontSize: 28, fontWeight: 400, letterSpacing: '0.15em', textTransform: 'uppercase' as const, lineHeight: '1' }}>Theogene Sibomana</div>
-            <div style={{ fontSize: 11, letterSpacing: '0.12em', color: '#aaa', textTransform: 'uppercase' as const, marginTop: 2 }}>Ideas. Leadership. Impact.</div>
+            <a href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+              <div style={{ fontSize: 28, fontWeight: 400, letterSpacing: '0.15em', textTransform: 'uppercase' as const, lineHeight: '1' }}>Theogene Sibomana</div>
+              <div style={{ fontSize: 11, letterSpacing: '0.12em', color: '#aaa', textTransform: 'uppercase' as const, marginTop: 2 }}>Ideas. Leadership. Impact.</div>
+            </a>
           </div>
           <div className="nav-links" style={{ flex: 1 }}>
             <a href="/" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.15em', color: '#888', textDecoration: 'none', textTransform: 'uppercase' as const }}>Home</a>

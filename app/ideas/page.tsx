@@ -78,7 +78,7 @@ export default function IdeasPage() {
         {selected && (
           <div onClick={() => setSelected(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
             <div onClick={e => e.stopPropagation()} style={{ background: 'white', borderRadius: 12, maxWidth: 640, width: '100%', padding: '48px 40px', position: 'relative', maxHeight: '85vh', overflowY: 'auto' }}>
-              <button onClick={() => setSelected(null)} style={{ position: 'absolute', top: 16, right: 20, background: 'none', border: 'none', fontSize: 24, cursor: 'pointer', color: '#888', lineHeight: 1 }}>✕</button>
+              <button onClick={() => setSelected(null)} style={{ position: 'absolute', top: 16, right: 20, background: 'none', border: 'none', fontSize: 24, cursor: 'pointer', color: '#fff', lineHeight: 1 }}>✕</button>
               <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#4b5320' }}>{selected.tag}</span>
               <h2 style={{ fontWeight: 900, fontSize: 24, lineHeight: 1.3, margin: '12px 0 28px' }}>{selected.title}</h2>
               <div style={{ borderTop: '2px solid #4b5320', marginBottom: 28 }} />
