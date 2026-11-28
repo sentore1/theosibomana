@@ -6,3 +6,5 @@ body { font-family: 'Inter', sans-serif; }
 .font-serif { font-family: 'Playfair Display', serif; }
 
 input::placeholder { color: #aaa; opacity: 1; }
+.tour-input::placeholder { color: rgba(255,255,255,0.6) !important; }
+.news-input::placeholder { color: rgba(255,255,255,0.6) !important; }

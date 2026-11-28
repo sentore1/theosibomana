@@ -37,10 +37,18 @@ export default function IdeasPage() {
         {/* HERO */}
         <section style={{ background: '#111', padding: '80px 40px', textAlign: 'center' }}>
           <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.3em', textTransform: 'uppercase', color: '#4b5320', marginBottom: 16 }}>Ideas &amp; Insights</p>
-          <h1 style={{ color: 'white', fontSize: 48, fontWeight: 900, lineHeight: 1.1 }}>Thoughts on <em style={{ fontFamily: 'Georgia,serif', fontStyle: 'italic', fontWeight: 400 }}>leadership,</em><br />wealth &amp; growth</h1>
+          <h1 className="ideas-hero-h1" style={{ color: 'white', fontWeight: 900, lineHeight: 1.1 }}>Thoughts on <em style={{ fontFamily: 'Georgia,serif', fontStyle: 'italic', fontWeight: 400 }}>leadership,</em><br />wealth &amp; growth</h1>
           <div style={{ width: 80, height: 3, background: '#4b5320', margin: '20px auto 0' }} />
         </section>
 
+        <style>{`
+          .articles-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px; }
+          .ideas-hero-h1 { font-size: 48px; }
+          @media (max-width: 768px) {
+            .articles-grid { grid-template-columns: 1fr; }
+            .ideas-hero-h1 { font-size: 30px; }
+          }
+        `}</style>
         {/* ARTICLES */}
         <section style={{ maxWidth: 960, margin: '0 auto', padding: '80px 40px' }}>
           {loading ? (
@@ -48,7 +56,7 @@ export default function IdeasPage() {
           ) : articles.length === 0 ? (
             <p style={{ textAlign: 'center', color: '#999', fontSize: 14 }}>No articles published yet.</p>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 36 }}>
+            <div className="articles-grid">
               {articles.map(a => (
                 <div key={a.id} style={{ background: 'white', boxShadow: '0 4px 20px rgba(0,0,0,0.07)', borderTop: '3px solid #4b5320', padding: '32px 28px', display: 'flex', flexDirection: 'column' }}>
                   <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#999' }}>{a.tag}</span>

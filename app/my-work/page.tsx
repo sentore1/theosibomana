@@ -19,6 +19,17 @@ export default function MyWorkPage() {
           </p>
         </section>
 
+        <style>{`
+          .initiative-row { display: flex; gap: 56px; align-items: center; flex-wrap: wrap; }
+          .initiative-row-reverse { flex-direction: row-reverse; }
+          .initiative-img { width: 280px; height: 320px; overflow: hidden; flex-shrink: 0; box-shadow: 0 16px 48px rgba(0,0,0,0.12); }
+          .initiative-text { flex: 1; min-width: 260px; }
+          @media (max-width: 768px) {
+            .initiative-row, .initiative-row-reverse { flex-direction: column !important; gap: 28px; }
+            .initiative-img { width: 100% !important; height: 240px !important; }
+            .initiative-text { min-width: unset; }
+          }
+        `}</style>
         {/* INITIATIVES */}
         <section style={{ maxWidth: 900, margin: '0 auto', padding: '0 40px 80px', display: 'flex', flexDirection: 'column', gap: 64 }}>
           {[
@@ -39,11 +50,11 @@ export default function MyWorkPage() {
               reverse: true,
             },
           ].map(org => (
-            <div key={org.name} style={{ display: 'flex', gap: 56, alignItems: 'center', flexDirection: org.reverse ? 'row-reverse' : 'row', flexWrap: 'wrap' }}>
-              <div style={{ width: 280, height: 320, overflow: 'hidden', flexShrink: 0, boxShadow: '0 16px 48px rgba(0,0,0,0.12)' }}>
+            <div key={org.name} className={`initiative-row${org.reverse ? ' initiative-row-reverse' : ''}`}>
+              <div className="initiative-img">
                 <Image src={org.img} alt={org.name} width={280} height={320} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
-              <div style={{ flex: 1, minWidth: 260 }}>
+              <div className="initiative-text">
                 <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#999', marginBottom: 8 }}>{org.tagline}</p>
                 <h2 style={{ fontSize: 30, fontWeight: 900, marginBottom: 20 }}>{org.name}</h2>
                 <p style={{ color: '#555', lineHeight: 1.85, fontSize: 15, marginBottom: 24 }}>{org.desc}</p>

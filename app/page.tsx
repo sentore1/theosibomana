@@ -30,16 +30,24 @@ export default function Home() {
 
   async function handleTourSubmit(e: React.FormEvent) {
     e.preventDefault()
-    const { error } = await supabase.from('subscribers').insert({ name: tourName, email: tourEmail, type: 'tour' })
-    if (error) setTourMsg('Error. Try again.')
-    else { setTourMsg('Thank you!'); setTourName(''); setTourEmail('') }
+    const res = await fetch('/api/subscribers', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: tourName, email: tourEmail, type: 'tour' }),
+    })
+    if (!res.ok) setTourMsg('Error. Try again.')
+    else { setTourMsg('Thank you! Check your email.'); setTourName(''); setTourEmail('') }
   }
 
   async function handleNewsSubmit(e: React.FormEvent) {
     e.preventDefault()
-    const { error } = await supabase.from('subscribers').insert({ name: newsName, email: newsEmail, type: 'newsletter' })
-    if (error) setNewsMsg('Error. Try again.')
-    else { setNewsMsg('Thank you!'); setNewsName(''); setNewsEmail('') }
+    const res = await fetch('/api/subscribers', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: newsName, email: newsEmail, type: 'newsletter' }),
+    })
+    if (!res.ok) setNewsMsg('Error. Try again.')
+    else { setNewsMsg('Thank you! Check your email.'); setNewsName(''); setNewsEmail('') }
   }
 
   return (
@@ -311,11 +319,11 @@ export default function Home() {
             Get your copy of Theogene Sibomana&apos;s books and start your journey toward wealth, leadership and impact. Register your interest now!
           </p>
           <form onSubmit={handleTourSubmit} style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
-            <input style={{ flex: '1 1 160px', padding: '13px 18px', borderRadius: 8, border: 'none', outline: 'none', fontSize: 13 }} placeholder="YOUR NAME" value={tourName} onChange={e => setTourName(e.target.value)} required />
-            <input type="email" style={{ flex: '1 1 160px', padding: '13px 18px', borderRadius: 8, border: 'none', outline: 'none', fontSize: 13 }} placeholder="EMAIL ADDRESS" value={tourEmail} onChange={e => setTourEmail(e.target.value)} required />
+            <input className="tour-input" style={{ flex: '1 1 160px', padding: '13px 18px', borderRadius: 8, border: 'none', outline: 'none', fontSize: 13, background: 'rgba(255,255,255,0.12)', color: 'white' }} placeholder="YOUR NAME" value={tourName} onChange={e => setTourName(e.target.value)} required />
+            <input className="tour-input" type="email" style={{ flex: '1 1 160px', padding: '13px 18px', borderRadius: 8, border: 'none', outline: 'none', fontSize: 13, background: 'rgba(255,255,255,0.12)', color: 'white' }} placeholder="EMAIL ADDRESS" value={tourEmail} onChange={e => setTourEmail(e.target.value)} required />
             <button type="submit" style={{ background: '#4b5320', color: '#fff', fontWeight: 900, padding: '13px 30px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase' as const }}>Submit</button>
           </form>
-          {tourMsg && <p style={{ marginTop: 18, color: '#4b5320', fontWeight: 700 }}>{tourMsg}</p>}
+          {tourMsg && <p style={{ marginTop: 18, color: tourMsg.startsWith('Error') ? '#ff6b6b' : '#a8d08d', fontWeight: 700 }}>{tourMsg}</p>}
         </div>
       </section>
 
@@ -350,11 +358,11 @@ export default function Home() {
             Monthly, Theogene shares practical insights on leadership, wealth creation and personal growth. Join the journey toward a more educated, healthy and prosperous Africa!
           </p>
           <form onSubmit={handleNewsSubmit} style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-            <input style={{ flex: '1 1 140px', padding: '13px 18px', borderRadius: 8, border: '1px solid #ccc', outline: 'none', fontSize: 13, background: '#e0e0e0' }} placeholder="YOUR NAME" value={newsName} onChange={e => setNewsName(e.target.value)} required />
-            <input type="email" style={{ flex: '1 1 140px', padding: '13px 18px', borderRadius: 8, border: '1px solid #ccc', outline: 'none', fontSize: 13, background: '#e0e0e0' }} placeholder="EMAIL ADDRESS" value={newsEmail} onChange={e => setNewsEmail(e.target.value)} required />
-            <button type="submit" style={{ background: '#1a1a1a', color: 'white', fontWeight: 900, padding: '13px 22px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 20 }}>&#8250;</button>
+            <input className="news-input" style={{ flex: '1 1 140px', padding: '13px 18px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.3)', outline: 'none', fontSize: 13, background: 'rgba(255,255,255,0.15)', color: 'white' }} placeholder="YOUR NAME" value={newsName} onChange={e => setNewsName(e.target.value)} required />
+            <input className="news-input" type="email" style={{ flex: '1 1 140px', padding: '13px 18px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.3)', outline: 'none', fontSize: 13, background: 'rgba(255,255,255,0.15)', color: 'white' }} placeholder="EMAIL ADDRESS" value={newsEmail} onChange={e => setNewsEmail(e.target.value)} required />
+            <button type="submit" style={{ background: '#1a1a1a', color: 'white', fontWeight: 900, padding: '13px 22px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 20, flexShrink: 0 }}>&#8250;</button>
           </form>
-          {newsMsg && <p style={{ margin: '18px 0 0 0', fontWeight: 700 }}>{newsMsg}</p>}
+          {newsMsg && <p style={{ margin: '18px 0 0 0', fontWeight: 700, color: newsMsg.startsWith('Error') ? '#ff6b6b' : '#a8d08d' }}>{newsMsg}</p>}
         </div>
       </section>
 
@@ -369,8 +377,8 @@ export default function Home() {
             </div>
             <div>
               <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.2em', color: '#888', textTransform: 'uppercase', marginBottom: 16 }}>Let&apos;s Talk</p>
-              <p style={{ color: '#aaa', fontSize: 13, marginBottom: 8 }}>theosibomana.com</p>
-              <p className="footer-email" style={{ color: 'white', fontSize: 28, fontWeight: 300, letterSpacing: '-0.01em', marginBottom: 16, borderBottom: '1px solid #333', paddingBottom: 16 }}>hello@theosibomana.com</p>
+              <p style={{ color: '#aaa', fontSize: 13, marginBottom: 8 }}>theogenesibo.com</p>
+              <p className="footer-email" style={{ color: 'white', fontSize: 28, fontWeight: 300, letterSpacing: '-0.01em', marginBottom: 16, borderBottom: '1px solid #333', paddingBottom: 16 }}>hello@theogenesibo.com</p>
               <p style={{ color: '#888', fontSize: 12 }}>Entrepreneur. Author. Educator.</p>
               <p style={{ color: '#666', fontSize: 12 }}>(Based in Rwanda)</p>
             </div>
@@ -390,7 +398,7 @@ export default function Home() {
             </div>
           </div>
           <div className="footer-bottom" style={{ borderTop: '1px solid #222', paddingTop: 24 }}>
-            <span>&copy; 2026 Theogene Sibomana. All rights reserved. | theosibomana.com</span>
+            <span>&copy; 2026 Theogene Sibomana. All rights reserved. | theogenesibo.com</span>
             <div style={{ display: 'flex', gap: 20 }}>
               <a href="#" style={{ color: '#555', textDecoration: 'none' }}>Privacy</a>
               <a href="#" style={{ color: '#555', textDecoration: 'none' }}>Terms</a>

@@ -72,8 +72,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
             <div>
               <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.2em', color: '#888', textTransform: 'uppercase' as const, marginBottom: 16 }}>Let&apos;s Talk</p>
-              <p style={{ color: '#aaa', fontSize: 13, marginBottom: 8 }}>theosibomana.com</p>
-              <p className="footer-email" style={{ color: 'white', fontSize: 28, fontWeight: 300, letterSpacing: '-0.01em', marginBottom: 16, borderBottom: '1px solid #333', paddingBottom: 16 }}>hello@theosibomana.com</p>
+              <p style={{ color: '#aaa', fontSize: 13, marginBottom: 8 }}>theogenesibo.com</p>
+              <p className="footer-email" style={{ color: 'white', fontSize: 28, fontWeight: 300, letterSpacing: '-0.01em', marginBottom: 16, borderBottom: '1px solid #333', paddingBottom: 16 }}>hello@theogenesibo.com</p>
               <p style={{ color: '#888', fontSize: 12 }}>Entrepreneur. Author. Educator.</p>
               <p style={{ color: '#666', fontSize: 12 }}>(Based in Rwanda)</p>
             </div>
@@ -93,7 +93,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
           <div className="footer-bottom" style={{ borderTop: '1px solid #222', paddingTop: 24 }}>
-            <span>&copy; 2026 Theogene Sibomana. All rights reserved. | theosibomana.com</span>
+            <span>&copy; 2026 Theogene Sibomana. All rights reserved. | theogenesibo.com</span>
             <div style={{ display: 'flex', gap: 20 }}>
               <a href="#" style={{ color: '#555', textDecoration: 'none' }}>Privacy</a>
               <a href="#" style={{ color: '#555', textDecoration: 'none' }}>Terms</a>

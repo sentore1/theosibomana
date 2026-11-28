@@ -1,4 +1,4 @@
--- Theogene Sibomana — theosibomana.com
+-- Theogene Sibomana — theogenesibo.com
 -- Run this in your Supabase SQL Editor
 
 create table if not exists books (

@@ -4,21 +4,39 @@ import Layout from '../components/Layout'
 export default function AboutPage() {
   return (
     <Layout>
+      <style>{`
+        .about-hero { background: #111; padding: 80px 40px; text-align: center; }
+        .about-hero h1 { color: white; font-size: 48px; font-weight: 900; line-height: 1.1; margin-bottom: 0; }
+        .about-bio { max-width: 900px; margin: 0 auto; padding: 80px 40px; display: flex; gap: 64px; align-items: center; flex-wrap: wrap; }
+        .about-bio-img { width: 260px; height: 320px; overflow: hidden; flex-shrink: 0; box-shadow: 0 16px 48px rgba(0,0,0,0.12); }
+        .about-bio-text { flex: 1; min-width: 280px; }
+        .about-bio-text h2 { font-size: 32px; font-weight: 900; margin-bottom: 24px; }
+        .about-values-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+        @media (max-width: 768px) {
+          .about-hero { padding: 60px 20px; }
+          .about-hero h1 { font-size: 32px; }
+          .about-bio { padding: 48px 20px; gap: 32px; flex-direction: column; align-items: flex-start; }
+          .about-bio-img { width: 100%; height: 280px; }
+          .about-bio-text { min-width: unset; }
+          .about-bio-text h2 { font-size: 24px; }
+          .about-values-grid { grid-template-columns: 1fr; }
+        }
+      `}</style>
       <main style={{ fontFamily: 'Arial, sans-serif', width: '100%', overflowX: 'hidden' }}>
         {/* HERO */}
-        <section style={{ background: '#111', padding: '80px 40px', textAlign: 'center' }}>
+        <section className="about-hero">
           <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.3em', textTransform: 'uppercase', color: '#4b5320', marginBottom: 16 }}>About Me</p>
-          <h1 style={{ color: 'white', fontSize: 48, fontWeight: 900, lineHeight: 1.1, marginBottom: 0 }}>Theogene <em style={{ fontFamily: 'Georgia,serif', fontStyle: 'italic', fontWeight: 400 }}>Sibomana</em></h1>
+          <h1>Theogene <em style={{ fontFamily: 'Georgia,serif', fontStyle: 'italic', fontWeight: 400 }}>Sibomana</em></h1>
           <div style={{ width: 80, height: 3, background: '#4b5320', margin: '20px auto 0' }} />
         </section>
 
         {/* BIO */}
-        <section style={{ maxWidth: 900, margin: '0 auto', padding: '80px 40px', display: 'flex', gap: 64, alignItems: 'center', flexWrap: 'wrap' }}>
-          <div style={{ width: 260, height: 320, overflow: 'hidden', flexShrink: 0, boxShadow: '0 16px 48px rgba(0,0,0,0.12)' }}>
+        <section className="about-bio">
+          <div className="about-bio-img">
             <Image src="/Theo profile image.png" alt="Theogene Sibomana" width={260} height={320} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
-          <div style={{ flex: 1, minWidth: 280 }}>
-            <h2 style={{ fontSize: 32, fontWeight: 900, marginBottom: 24 }}>Entrepreneur. Author. Educator.</h2>
+          <div className="about-bio-text">
+            <h2>Entrepreneur. Author. Educator.</h2>
             <p style={{ color: '#555', lineHeight: 1.85, fontSize: 15, marginBottom: 20 }}>
               I am an entrepreneur, author and educator, passionate about empowering people, strengthening institutions and promoting wealth creation through knowledge.
             </p>
@@ -35,7 +53,7 @@ export default function AboutPage() {
         <section style={{ background: '#f7f7f7', padding: '80px 40px' }}>
           <div style={{ maxWidth: 900, margin: '0 auto' }}>
             <h2 style={{ fontSize: 32, fontWeight: 900, textAlign: 'center', marginBottom: 56 }}>What Drives Me</h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 32 }}>
+            <div className="about-values-grid">
               {[
                 { icon: '💡', title: 'Ideas', desc: 'Every transformation begins with a bold idea. I believe in the power of knowledge to change lives.' },
                 { icon: '🤝', title: 'Leadership', desc: 'Strong leaders build strong communities. I invest in developing leaders at every level.' },
